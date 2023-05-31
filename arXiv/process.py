@@ -92,13 +92,13 @@ def crawler(query,
             )
 
             try:
-                for result in client.get(search):
+                for result in client.results(search):
                     # 是否在指定的类别内
                     for cate in result.categories:
                         if cate in subjectcategory:
                             break
-                    else:
-                        continue
+                        else:
+                            continue
 
                     # 数据库中是否已存在
                     short_id = result.get_short_id()
@@ -106,18 +106,18 @@ def crawler(query,
                         continue
                     db_set.add(short_id)
 
-                    year = result.updated.tm_year
+                    year = result.updated.date().year
                     ori = dict()
                     ori['title'] = result.title
                     ori['authors'] = [author.name for author in result.authors]
                     ori['updated_sorted'] = result.updated
                     # ori['published'] = time.strftime('%Y-%m-%d %H:%M:%S', result.published)
-                    ori['updated'] = time.strftime('%Y-%m-%d %H:%M:%S', result.updated)
+                    ori['updated'] = result.updated.strftime('%Y-%m-%d %H:%M:%S')
                     ori['summary'] = result.summary.replace('\n', ' ')
                     # ori['comment'] = result.comment
                     # ori['primary_category'] = result.primary_category
                     # ori['categories'] = result.categories
-                    ori['pdf_url'] = result.get_pdf_url()
+                    ori['pdf_url'] = result.pdf_url
                     ori['short_id'] = result.get_short_id()
                     query_results[year].append(ori)
             except arxiv.UnexpectedEmptyPageError:
